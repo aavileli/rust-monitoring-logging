@@ -5,6 +5,7 @@ use regex::Regex;
 use serde::Serialize;
 use std::time::{SystemTime, UNIX_EPOCH};
 use actix_web_prom::PrometheusMetricsBuilder;
+use std::path::Path; 
 
 
 // Health endpoint JSON
@@ -24,6 +25,11 @@ struct HealthStatus {
 
 async fn health() -> impl Responder {
     let mut checks = vec![];
+
+    if Path::new("fail.txt").exists() {
+        return HttpResponse::InternalServerError().body("Internal Server Error")
+    }
+
 
     // Check container uptime
     let uptime = SystemTime::now()
